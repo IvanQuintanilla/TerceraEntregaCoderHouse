@@ -1,94 +1,83 @@
-// Objeto para representar la calculadora
-const calculadora = {
-    historialCalculos: [],
+let usuarioActual = null;
 
-    obtenerNumero: function(mensaje) {
-        let userInput;
-        do {
-            userInput = prompt(mensaje);
-        } while (isNaN(userInput) || userInput.trim() === ''); 
-        return parseFloat(userInput);
-    },
+function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-    mostrarHistorial: function() {
-        const historialReverso = this.historialCalculos.slice().reverse();
-        alert("Historial de cálculos:\n" + historialReverso.join("\n"));
-    },
+  // Verificar credenciales (en el lado del cliente, esto no es seguro en producción)
+  if (username === "hola" && password === "calculadora") {
+    document.getElementById("login-message").textContent = "Inicio de sesión exitoso";
+    usuarioActual = { username: username };
 
-    filtrarHistorial: function(tipoOperacion) {
-        return this.historialCalculos.filter(function(calculo) {
-            // Modificado para que utilice el símbolo de la operación
-            return calculo.includes(` ${tipoOperacion} `);
-        });
-    },
+    // Almacenar información del usuario en localStorage
+    localStorage.setItem("user", JSON.stringify(usuarioActual));
 
-    suma: function() {
-        const numeroA = this.obtenerNumero("Primer numero del calculo");
-        const numeroB = this.obtenerNumero("Segundo numero del calculo");
-        const resultado = numeroA + numeroB;
-        alert(`${numeroA} + ${numeroB} = ${resultado}`);
-        this.historialCalculos.unshift(`${numeroA} + ${numeroB} = ${resultado}`);
-    },
+    // Mostrar la calculadora después del inicio de sesión
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("calculadora-container").style.display = "block";
+  } else {
+    document.getElementById("login-message").textContent = "Credenciales incorrectas";
+  }
+}
 
-    resta: function() {
-        const numeroA = this.obtenerNumero("Primer numero del calculo");
-        const numeroB = this.obtenerNumero("Segundo numero del calculo");
-        const resultado = numeroA - numeroB;
-        alert(`${numeroA} - ${numeroB} = ${resultado}`);
-        this.historialCalculos.unshift(`${numeroA} - ${numeroB} = ${resultado}`);
-    },
+function realizarOperacion(tipoOperacion) {
+  const num1 = parseFloat(document.getElementById("num1").value);
+  const num2 = parseFloat(document.getElementById("num2").value);
 
-    division: function() {
-        const numeroA = this.obtenerNumero("Primer numero del calculo");
-        const numeroB = this.obtenerNumero("Segundo numero del calculo");
-        const resultado = numeroA / numeroB;
-        alert(`${numeroA} / ${numeroB} = ${resultado}`);
-        this.historialCalculos.unshift(`${numeroA} / ${numeroB} = ${resultado}`);
-    },
+  let resultado;
+  switch (tipoOperacion) {
+    case '+':
+      resultado = num1 + num2;
+      break;
+    case '-':
+      resultado = num1 - num2;
+      break;
+    case '*':
+      resultado = num1 * num2;
+      break;
+    case '/':
+      resultado = num1 / num2;
+      break;
+    default:
+      break;
+  }
 
-    multiplicacion: function() {
-        const numeroA = this.obtenerNumero("Primer numero del calculo");
-        const numeroB = this.obtenerNumero("Segundo numero del calculo");
-        const resultado = numeroA * numeroB;
-        alert(`${numeroA} x ${numeroB} = ${resultado}`);
-        this.historialCalculos.unshift(`${numeroA} x ${numeroB} = ${resultado}`);
-    },
+  alert(`${num1} ${tipoOperacion} ${num2} = ${resultado}`);
 
-    // Método principal que maneja el flujo de la calculadora
-    ejecutarCalculadora: function() {
-        let opcion;
-        do {
-            opcion = parseInt(prompt("Elige una operacion: \n 1 suma \n 2 resta \n 3 division \n 4 multiplicacion \n 5 historial \n 6 cerrar"));
+  // Actualizar historial y almacenar en localStorage
+  const historial = document.getElementById("historial");
+  const nuevaOperacion = document.createElement("p");
+  nuevaOperacion.textContent = `${num1} ${tipoOperacion} ${num2} = ${resultado}`;
+  historial.prepend(nuevaOperacion);
 
-            switch(opcion) {
-                case 1:
-                    this.suma();
-                    break;
-                case 2:
-                    this.resta();
-                    break;
-                case 3:
-                    this.division();
-                    break;
-                case 4:
-                    this.multiplicacion();
-                    break;
-                case 5:
-                    const tipoOperacion = prompt("Ingrese el símbolo de la operación a filtrar (+, -, *, /):");
-                    const resultadosFiltrados = this.filtrarHistorial(tipoOperacion);
-                    alert(`Resultados filtrados por ${tipoOperacion}:\n${resultadosFiltrados.join("\n")}`);
-                    break;
-                case 6:
-                    alert("Enter para cerrar la calculadora. ¡Gracias por usarla!");
-                    break;
-                default:
-                    alert("Opcion no valida");
-                    break;
-            }
+  const historialCalculos = JSON.parse(localStorage.getItem("historialCalculos")) || [];
+  historialCalculos.unshift({ operacion: nuevaOperacion.textContent, timestamp: new Date().toLocaleString() });
+  localStorage.setItem("historialCalculos", JSON.stringify(historialCalculos));
+}
 
-        } while (opcion !== 6);
-    }
-};
+function cerrarSesion() {
+  // Limpiar información del usuario y volver al formulario de inicio de sesión
+  localStorage.removeItem("user");
+  usuarioActual = null;
+  document.getElementById("login-container").style.display = "block";
+  document.getElementById("calculadora-container").style.display = "none";
+}
 
-// Llamada al método principal para iniciar la calculadora
-calculadora.ejecutarCalculadora();
+// Verificar si hay información de usuario almacenada al cargar la página
+document.addEventListener("DOMContentLoaded", function() {
+  var storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    usuarioActual = JSON.parse(storedUser);
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("calculadora-container").style.display = "block";
+  }
+
+  // Cargar historial desde localStorage
+  const historialCalculos = JSON.parse(localStorage.getItem("historialCalculos")) || [];
+  const historial = document.getElementById("historial");
+  historialCalculos.forEach(item => {
+    const operacion = document.createElement("p");
+    operacion.textContent = `${item.operacion} (Fecha: ${item.timestamp})`;
+    historial.appendChild(operacion);
+  });
+});
