@@ -81,3 +81,47 @@ document.addEventListener("DOMContentLoaded", function() {
     historial.appendChild(operacion);
   });
 });
+document.getElementById("login-button").addEventListener("click", login);
+document.getElementById("cerrar-sesion-button").addEventListener("click", cerrarSesion);
+
+// Variables para manejar el teclado numérico
+let display = document.getElementById("display");
+let currentInput = "";
+
+function appendNumber(number) {
+  currentInput += number;
+  updateDisplay();
+}
+
+function appendOperator(operator) {
+  currentInput += operator;
+  updateDisplay();
+}
+
+function calculate() {
+  try {
+    const result = eval(currentInput);
+    alert(result);
+    updateHistorial(`${currentInput} = ${result}`);
+  } catch (error) {
+    alert("Error en la expresión");
+  } finally {
+    currentInput = "";
+    updateDisplay();
+  }
+}
+
+function updateDisplay() {
+  display.value = currentInput;
+}
+
+function updateHistorial(operation) {
+  const historial = document.getElementById("historial");
+  const nuevaOperacion = document.createElement("p");
+  nuevaOperacion.textContent = operation;
+  historial.prepend(nuevaOperacion);
+
+  const historialCalculos = JSON.parse(localStorage.getItem("historialCalculos")) || [];
+  historialCalculos.unshift({ operacion: nuevaOperacion.textContent, timestamp: new Date().toLocaleString() });
+  localStorage.setItem("historialCalculos", JSON.stringify(historialCalculos));
+}

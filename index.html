@@ -4,11 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora con Historial</title>
-  <style>
-    #calculadora-container {
-      display: none;
-    }
-  </style>
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
@@ -22,33 +18,44 @@
       <label for="password">Contraseña:</label>
       <input type="password" id="password" required>
       <br>
-      <button type="button" onclick="login()">Iniciar sesión</button>
+      <button type="button" id="login-button">Iniciar sesión</button>
     </form>
   </div>
 
   <div id="calculadora-container">
     <h2>Calculadora</h2>
     <div>
-      <label for="num1">Primer número:</label>
-      <input type="text" id="num1">
+      <input type="text" id="display" readonly>
     </div>
-    <div>
-      <label for="num2">Segundo número:</label>
-      <input type="text" id="num2">
-    </div>
-    <div>
-      <button onclick="realizarOperacion('+')">Sumar</button>
-      <button onclick="realizarOperacion('-')">Restar</button>
-      <button onclick="realizarOperacion('*')">Multiplicar</button>
-      <button onclick="realizarOperacion('/')">Dividir</button>
+    <div id="keyboard">
+      <button class="num-button" onclick="appendNumber('7')">7</button>
+      <button class="num-button" onclick="appendNumber('8')">8</button>
+      <button class="num-button" onclick="appendNumber('9')">9</button>
+      <button class="operator-button" onclick="appendOperator('+')">+</button>
+      <br>
+      <button class="num-button" onclick="appendNumber('4')">4</button>
+      <button class="num-button" onclick="appendNumber('5')">5</button>
+      <button class="num-button" onclick="appendNumber('6')">6</button>
+      <button class="operator-button" onclick="appendOperator('-')">-</button>
+      <br>
+      <button class="num-button" onclick="appendNumber('1')">1</button>
+      <button class="num-button" onclick="appendNumber('2')">2</button>
+      <button class="num-button" onclick="appendNumber('3')">3</button>
+      <button class="operator-button" onclick="appendOperator('*')">*</button>
+      <br>
+      <button class="num-button" onclick="appendNumber('0')">0</button>
+      <button class="operator-button" onclick="appendOperator('.')">.</button>
+      <button class="operator-button" onclick="calculate()">=</button>
+      <button class="operator-button" onclick="appendOperator('/')">/</button>
     </div>
     <div id="historial"></div>
     <div>
-      <button onclick="cerrarSesion()">Cerrar Sesión</button>
+      <button id="cerrar-sesion-button">Cerrar Sesión</button>
     </div>
   </div>
 
-  <script src="./index.js">
+  <script src="./index.js"></script>
+  <script>
 
   </script>
 
